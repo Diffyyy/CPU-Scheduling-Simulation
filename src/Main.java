@@ -10,21 +10,21 @@ public class Main {
 
         int t = 0;
         for (int i = 0; i < processList.size(); i++) {
+            int startTime;
             if (t >= processList.get(i).getArrivalTime()) {
-                int processId = processList.get(i).getProcessId();
-                int startTime = t;
-                int endTime = startTime + processList.get(i).getBurstTime();
-                int waitingTime = endTime - processList.get(i).getArrivalTime() - processList.get(i).getBurstTime();
-                result.add(new Integer[]{processId, startTime, endTime, waitingTime});
-                t = endTime;
+                startTime = t;
             } else {
-                t = processList.get(i).getArrivalTime();
+                startTime = processList.get(i).getArrivalTime();
             }
+            int processId = processList.get(i).getProcessId();
+            int endTime = startTime + processList.get(i).getBurstTime();
+            int waitingTime = endTime - processList.get(i).getArrivalTime() - processList.get(i).getBurstTime();
+            result.add(new Integer[]{processId, startTime, endTime, waitingTime});
+            t = endTime;
         }
         // Sort the result by process id
         result.sort(Comparator.comparingInt(obj -> ((Integer)obj[0])));
 
-        System.out.println(result);
         for (int i = 0; i < result.size(); i++){
             System.out.println(result.get(i)[0] + " start time: " + result.get(i)[1] + " end time: " + result.get(i)[2] + " | Waiting time: " + result.get(i)[3]);
         }
@@ -37,7 +37,6 @@ public class Main {
 
         averageWaitingTime = totalWaitingTime/result.size();
         System.out.println("Average Waiting Time: " + averageWaitingTime);
-
     }
     public static void main(String[] args) {
         System.out.println("Hello world!");
@@ -57,10 +56,12 @@ public class Main {
         }
 
 
+        if (X == 0)
+            FCFS(processList);
 
         //FOR DEBUGGING ONLY
         for(i = 0; i < Y; i++){
-            System.out.println("Process " + processList.get(i).processId + " | Arrival Time: " + processList.get(i).arrivalTime + " | burstTime: " + processList.get(i).burstTime);
+            System.out.println("Process " + processList.get(i).getProcessId() + " | Arrival Time: " + processList.get(i).getArrivalTime() + " | burstTime: " + processList.get(i).getBurstTime());
         }
 
     }
