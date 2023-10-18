@@ -2,6 +2,43 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public static void FCFS(ArrayList<Process> processes) {
+        List<Process> processList = new ArrayList<>(processes);
+
+        Collections.sort(processList, Comparator.comparingInt(process -> process.getArrivalTime()));
+        List<Integer[]> result = new ArrayList<>();
+
+        int t = 0;
+        for (int i = 0; i < processList.size(); i++) {
+            if (t >= processList.get(i).getArrivalTime()) {
+                int processId = processList.get(i).getProcessId();
+                int startTime = t;
+                int endTime = startTime + processList.get(i).getBurstTime();
+                int waitingTime = endTime - processList.get(i).getArrivalTime() - processList.get(i).getBurstTime();
+                result.add(new Integer[]{processId, startTime, endTime, waitingTime});
+                t = endTime;
+            } else {
+                t = processList.get(i).getArrivalTime();
+            }
+        }
+        // Sort the result by process id
+        result.sort(Comparator.comparingInt(obj -> ((Integer)obj[0])));
+
+        System.out.println(result);
+        for (int i = 0; i < result.size(); i++){
+            System.out.println(result.get(i)[0] + " start time: " + result.get(i)[1] + " end time: " + result.get(i)[2] + " | Waiting time: " + result.get(i)[3]);
+        }
+
+        float totalWaitingTime = 0;
+        float averageWaitingTime;
+        for (int i = 0; i < result.size(); i++){
+           totalWaitingTime += result.get(i)[3];
+        }
+
+        averageWaitingTime = totalWaitingTime/result.size();
+        System.out.println("Average Waiting Time: " + averageWaitingTime);
+
+    }
     public static void main(String[] args) {
         System.out.println("Hello world!");
         int X, Y, Z, processId, arrivalTime, burstTime, i;
