@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Process {
+public class Process{
     private int processId;
     private int arrivalTime;
     private int burstTime;
@@ -16,7 +16,7 @@ public class Process {
         this.startTime = 0;
         this.endTime = 0;
         this.waitingTime = 0;
-        this.remainingTime = 0;
+        this.remainingTime = burstTime;
     }
 
     public int getArrivalTime() {
@@ -58,4 +58,18 @@ public class Process {
     public void setEndTime(int endTime) {
         this.endTime = endTime;
     }
+
+    public void setBurstTime(int burstTime) {
+        this.burstTime = burstTime;
+    }
+
+    public void setArrivalTime(int arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public void setRemainingTime(int remainingTime) {
+        this.remainingTime = remainingTime;
+    }
+
+
 }

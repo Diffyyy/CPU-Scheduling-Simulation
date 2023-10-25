@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Main {
@@ -83,10 +84,62 @@ public class Main {
         avgWait /= completed.size();
         System.out.println("Average waiting time: " + avgWait);
     }
+
+    public static void srtf(ArrayList<Process> processes, int num){
+        int currentTime = 0;
+        int numCompleted = 0;
+        ArrayList<Process> completed = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        while (numCompleted < num){
+            int shortestProcess = Integer.MIN_VALUE;
+            int shortestBurst = Integer.MAX_VALUE;
+
+            int  i = 0;
+            for(Process process: processes){
+                if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0){
+                    shortestProcess = i;
+                    shortestBurst = process.getRemainingTime();
+                }
+                i++;
+            }
+
+            if(!(shortestProcess == Integer.MIN_VALUE)){
+                Process shortest = processes.get(shortestProcess);
+
+                if(shortest.getStartTime() == 0){
+                    shortest.setStartTime(currentTime);
+                }
+                shortest.setRemainingTime(shortest.getRemainingTime()-1);
+
+                if(shortest.getRemainingTime() == 0){
+                    numCompleted++;
+                    shortest.setEndTime(currentTime+1);
+                }
+            }
+            currentTime++;
+        }
+
+
+        for (Process process : processes) {
+            process.setWaitingTime(process.getEndTime() - process.getArrivalTime() - process.getBurstTime());
+            completed.add(process);
+        }
+
+        completed.sort(Comparator.comparingInt(p -> p.getProcessId()));
+        double avgWaitTime = 0;
+        for(Process process : completed){
+            avgWaitTime = avgWaitTime + process.getWaitingTime();
+            System.out.println(process.getProcessId() + " start time: " + process.getStartTime() +
+                    " end time: " + process.getEndTime() + " | Waiting time: " + process.getWaitingTime());
+        }
+        System.out.println("Average waiting time: " + df.format(avgWaitTime / num));
+
+    }
     public static void main(String[] args) {
         System.out.println("Hello world!");
         int X, Y, Z, processId, arrivalTime, burstTime, i;
-        ArrayList<Process> processList = new ArrayList<Process>();
+        ArrayList<Process> processList = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
 
         X = sc.nextInt();
@@ -103,15 +156,15 @@ public class Main {
 
         if (X == 0)
             FCFS(processList);
-        else if (X == 1)
+        else if (X == 1){
             System.out.println("Right");
             Z = 1;
             SJF(processList);
-
-        //FOR DEBUGGING ONLY
-        for(i = 0; i < Y; i++){
-            System.out.println("Process " + processList.get(i).getProcessId() + " | Arrival Time: " + processList.get(i).getArrivalTime() + " | burstTime: " + processList.get(i).getBurstTime());
         }
+        else if(X == 2){
+            srtf(processList, Y);
+        }
+
 
     }
 }
