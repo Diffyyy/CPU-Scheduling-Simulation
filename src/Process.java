@@ -8,6 +8,9 @@ public class Process{
     private int endTime;
     private int remainingTime;
     private int waitingTime;
+    private ArrayList<Integer> startTimes = new ArrayList<>();
+    private ArrayList<Integer> endTimes = new ArrayList<>();
+    private ArrayList<Integer> waitTimes = new ArrayList<>();
 
     public Process(int processId, int arrivalTime, int burstTime){
         this.processId = processId;
@@ -71,5 +74,27 @@ public class Process{
         this.remainingTime = remainingTime;
     }
 
+    public ArrayList<Integer> getStartTimes() {
+        return startTimes;
+    }
+
+    public ArrayList<Integer> getEndTimes() {
+        return endTimes;
+    }
+
+    public ArrayList<Integer> getWaitTimes() {
+        return waitTimes;
+    }
+
+    public void addStartTime(int start){
+        this.startTimes.add(start);
+    }
+    public void addEndTime(int end){
+        this.endTimes.add(end);
+    }
+
+    public void addWaitTime(int wait){
+        this.waitTimes.add(wait);
+    }
 
 }

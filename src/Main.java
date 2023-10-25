@@ -90,6 +90,8 @@ public class Main {
         int numCompleted = 0;
         ArrayList<Process> completed = new ArrayList<>();
         DecimalFormat df = new DecimalFormat("0.00");
+        double avgWaitTime = 0;
+        Process previousProcess = null;
 
         while (numCompleted < num){
             int shortestProcess = Integer.MIN_VALUE;
@@ -107,35 +109,51 @@ public class Main {
             if(!(shortestProcess == Integer.MIN_VALUE)){
                 Process shortest = processes.get(shortestProcess);
 
-                if(shortest.getStartTime() == 0){
-                    shortest.setStartTime(currentTime);
+                if(previousProcess != null){
+                    if(shortest.getProcessId() != previousProcess.getProcessId()){
+                        previousProcess.addEndTime(currentTime);
+                        shortest.addStartTime(currentTime);
+                    }
                 }
-                shortest.setRemainingTime(shortest.getRemainingTime()-1);
+                else {
+                    shortest.addStartTime(currentTime);
+                }
 
+                //set the "previous process" variable to the current for the next loop iteration
+                previousProcess = shortest;
+                shortest.setRemainingTime(shortest.getRemainingTime()-1);
                 if(shortest.getRemainingTime() == 0){
                     numCompleted++;
-                    shortest.setEndTime(currentTime+1);
+                    if(numCompleted == num){
+                        shortest.addEndTime(currentTime+1);
+                    }
                 }
+
+
             }
             currentTime++;
         }
 
-
-        for (Process process : processes) {
-            process.setWaitingTime(process.getEndTime() - process.getArrivalTime() - process.getBurstTime());
-            completed.add(process);
+        int waitTime = 0;
+        for(Process process: processes){
+            for(int i = 0; i < process.getStartTimes().size(); i++){
+                if(i == 0){
+                    waitTime= process.getStartTimes().get(i) - process.getArrivalTime();
+                }
+                else{
+                    waitTime = process.getStartTimes().get(i) - process.getEndTimes().get(i-1);
+                }
+                process.addWaitTime(waitTime);
+                System.out.println(process.getProcessId() + " start time: " + process.getStartTimes().get(i) +
+                        " end time: " + process.getEndTimes().get(i) + " wait time: " + process.getWaitTimes().get(i));
+                avgWaitTime = avgWaitTime + process.getWaitTimes().get(i);
+            }
         }
 
-        completed.sort(Comparator.comparingInt(p -> p.getProcessId()));
-        double avgWaitTime = 0;
-        for(Process process : completed){
-            avgWaitTime = avgWaitTime + process.getWaitingTime();
-            System.out.println(process.getProcessId() + " start time: " + process.getStartTime() +
-                    " end time: " + process.getEndTime() + " | Waiting time: " + process.getWaitingTime());
-        }
         System.out.println("Average waiting time: " + df.format(avgWaitTime / num));
 
     }
+
     public static void main(String[] args) {
         System.out.println("Hello world!");
         int X, Y, Z, processId, arrivalTime, burstTime, i;
