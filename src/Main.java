@@ -216,7 +216,7 @@ public class Main {
                 SJF(processList);
                 break;
             case 2:
-                ScheduleTest.SRTF(processList);
+                SRTF(processList);
                 break;
             case 3:
                 RR(processList, Z);
