@@ -16,8 +16,8 @@ public class Process{
         this.processId = processId;
         this.arrivalTime = arrivalTime;
         this.burstTime = burstTime;
-        this.startTime = 0;
-        this.endTime = 0;
+        this.startTime = -1;
+        this.endTime = -1;
         this.waitingTime = 0;
         this.remainingTime = burstTime;
     }
@@ -62,6 +62,11 @@ public class Process{
         this.endTime = endTime;
     }
 
+    public void decrementRemaining(int time){
+        remainingTime-=time;
+    }
+
+
     public void setBurstTime(int burstTime) {
         this.burstTime = burstTime;
     }
@@ -96,5 +101,6 @@ public class Process{
     public void addWaitTime(int wait){
         this.waitTimes.add(wait);
     }
+
 
 }

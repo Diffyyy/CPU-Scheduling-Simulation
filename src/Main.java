@@ -85,6 +85,38 @@ public class Main {
         System.out.println("Average waiting time: " + avgWait);
     }
 
+
+    public static void RR(ArrayList<Process> processes, int Z) {
+        processes.sort(Comparator.comparingInt(Process::getArrivalTime));
+        LinkedList<Process> q = new LinkedList<>();
+        HashMap<Process, Integer> lastFinished = new HashMap<>();
+        for (Process p : processes) lastFinished.put(p, p.getArrivalTime());
+        q.add(processes.get(0));
+        int t = processes.get(0).getArrivalTime();
+        int i = 1;
+        while (!q.isEmpty()) {
+            Process p = q.poll();
+            p.setWaitingTime(p.getWaitingTime() + t - lastFinished.get(p));
+            if (p.getStartTime() == -1) p.setStartTime(t);
+
+            int processTime = Math.min(Z, p.getRemainingTime());
+            p.decrementRemaining(processTime);
+            t += processTime;
+            lastFinished.put(p, t);
+            while (i < processes.size() && t >= processes.get(i).getArrivalTime()) q.offer(processes.get(i++));
+            if (p.getRemainingTime() > 0) q.add(p);
+            else p.setEndTime(t);
+        }
+        float avg = 0;
+        for(Process p: processes){
+            System.out.printf("%d start time: %d end time %d | Waiting time: %d\n",p.getProcessId(), p.getStartTime(),p.getEndTime(), p.getWaitingTime());
+            avg +=p.getWaitingTime();
+        }
+        avg/=processes.size();
+        System.out.println("Average waiting time: "+avg);
+
+    }
+
     public static void srtf(ArrayList<Process> processes, int num){
         int currentTime = 0;
         int numCompleted = 0;
@@ -170,18 +202,20 @@ public class Main {
             burstTime = sc.nextInt();
             processList.add(new Process(processId, arrivalTime, burstTime));
         }
-
-
-        if (X == 0)
-            FCFS(processList);
-        else if (X == 1){
-            System.out.println("Right");
-            Z = 1;
-            SJF(processList);
+        switch(X){
+            case 0:
+                FCFS(processList);
+                break;
+            case 1:
+                SJF(processList);
+                break;
+            case 2:
+                //SRTF
+                break;
+            case 3:
+                RR(processList, Z);
         }
-        else if(X == 2){
-            srtf(processList, Y);
-        }
+
 
 
     }
