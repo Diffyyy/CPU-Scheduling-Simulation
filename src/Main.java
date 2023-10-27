@@ -92,10 +92,11 @@ public class Main {
         HashMap<Process, Integer> lastFinished = new HashMap<>();
         for (Process p : processes) lastFinished.put(p, p.getArrivalTime());
         q.add(processes.get(0));
-        int t = processes.get(0).getArrivalTime();
+        int t = 0;
         int i = 1;
         while (!q.isEmpty()) {
             Process p = q.poll();
+            if(t < p.getArrivalTime()) t = p.getArrivalTime();
             int wait = t-lastFinished.get(p);
             p.setWaitingTime(p.getWaitingTime() + wait);
             p.addStartTime(t);
@@ -106,6 +107,7 @@ public class Main {
             p.addEndTime(t); p.addWaitTime(wait);
             while (i < processes.size() && t >= processes.get(i).getArrivalTime()) q.offer(processes.get(i++));
             if (p.getRemainingTime() > 0) q.add(p);
+            if(q.isEmpty() && i < processes.size())q.add(processes.get(i++));
         }
         float avg = 0;
         processes.sort(Comparator.comparingInt(Process::getProcessId));
@@ -118,7 +120,6 @@ public class Main {
         }
         avg/=processes.size();
         System.out.println("Average waiting time: "+avg);
-
     }
 
     public static void SRTF(ArrayList<Process> processes){
