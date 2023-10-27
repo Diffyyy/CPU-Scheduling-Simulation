@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Process {
+public class Process{
     private int processId;
     private int arrivalTime;
     private int burstTime;
@@ -8,6 +8,9 @@ public class Process {
     private int endTime;
     private int remainingTime;
     private int waitingTime;
+    private ArrayList<Integer> startTimes = new ArrayList<>();
+    private ArrayList<Integer> endTimes = new ArrayList<>();
+    private ArrayList<Integer> waitTimes = new ArrayList<>();
 
     public Process(int processId, int arrivalTime, int burstTime){
         this.processId = processId;
@@ -58,7 +61,46 @@ public class Process {
     public void setEndTime(int endTime) {
         this.endTime = endTime;
     }
+
     public void decrementRemaining(int time){
         remainingTime-=time;
     }
+
+
+    public void setBurstTime(int burstTime) {
+        this.burstTime = burstTime;
+    }
+
+    public void setArrivalTime(int arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public void setRemainingTime(int remainingTime) {
+        this.remainingTime = remainingTime;
+    }
+
+    public ArrayList<Integer> getStartTimes() {
+        return startTimes;
+    }
+
+    public ArrayList<Integer> getEndTimes() {
+        return endTimes;
+    }
+
+    public ArrayList<Integer> getWaitTimes() {
+        return waitTimes;
+    }
+
+    public void addStartTime(int start){
+        this.startTimes.add(start);
+    }
+    public void addEndTime(int end){
+        this.endTimes.add(end);
+    }
+
+    public void addWaitTime(int wait){
+        this.waitTimes.add(wait);
+    }
+
+
 }

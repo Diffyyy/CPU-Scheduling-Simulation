@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Main {
@@ -84,6 +85,7 @@ public class Main {
         System.out.println("Average waiting time: " + avgWait);
     }
 
+
     public static void RR(ArrayList<Process> processes, int Z) {
         processes.sort(Comparator.comparingInt(Process::getArrivalTime));
         LinkedList<Process> q = new LinkedList<>();
@@ -114,10 +116,80 @@ public class Main {
         System.out.println("Average waiting time: "+avg);
 
     }
+
+    public static void srtf(ArrayList<Process> processes, int num){
+        int currentTime = 0;
+        int numCompleted = 0;
+        ArrayList<Process> completed = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("0.00");
+        double avgWaitTime = 0;
+        Process previousProcess = null;
+
+        while (numCompleted < num){
+            int shortestProcess = Integer.MIN_VALUE;
+            int shortestBurst = Integer.MAX_VALUE;
+
+            int  i = 0;
+            for(Process process: processes){
+                if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0){
+                    shortestProcess = i;
+                    shortestBurst = process.getRemainingTime();
+                }
+                i++;
+            }
+
+            if(!(shortestProcess == Integer.MIN_VALUE)){
+                Process shortest = processes.get(shortestProcess);
+
+                if(previousProcess != null){
+                    if(shortest.getProcessId() != previousProcess.getProcessId()){
+                        previousProcess.addEndTime(currentTime);
+                        shortest.addStartTime(currentTime);
+                    }
+                }
+                else {
+                    shortest.addStartTime(currentTime);
+                }
+
+                //set the "previous process" variable to the current for the next loop iteration
+                previousProcess = shortest;
+                shortest.setRemainingTime(shortest.getRemainingTime()-1);
+                if(shortest.getRemainingTime() == 0){
+                    numCompleted++;
+                    if(numCompleted == num){
+                        shortest.addEndTime(currentTime+1);
+                    }
+                }
+
+
+            }
+            currentTime++;
+        }
+
+        int waitTime = 0;
+        for(Process process: processes){
+            for(int i = 0; i < process.getStartTimes().size(); i++){
+                if(i == 0){
+                    waitTime= process.getStartTimes().get(i) - process.getArrivalTime();
+                }
+                else{
+                    waitTime = process.getStartTimes().get(i) - process.getEndTimes().get(i-1);
+                }
+                process.addWaitTime(waitTime);
+                System.out.println(process.getProcessId() + " start time: " + process.getStartTimes().get(i) +
+                        " end time: " + process.getEndTimes().get(i) + " wait time: " + process.getWaitTimes().get(i));
+                avgWaitTime = avgWaitTime + process.getWaitTimes().get(i);
+            }
+        }
+
+        System.out.println("Average waiting time: " + df.format(avgWaitTime / num));
+
+    }
+
     public static void main(String[] args) {
         System.out.println("Hello world!");
         int X, Y, Z, processId, arrivalTime, burstTime, i;
-        ArrayList<Process> processList = new ArrayList<Process>();
+        ArrayList<Process> processList = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
 
         X = sc.nextInt();
@@ -145,10 +217,6 @@ public class Main {
         }
 
 
-        //FOR DEBUGGING ONLY
-        for(i = 0; i < Y; i++){
-            System.out.println("Process " + processList.get(i).getProcessId() + " | Arrival Time: " + processList.get(i).getArrivalTime() + " | burstTime: " + processList.get(i).getBurstTime());
-        }
 
     }
 }
