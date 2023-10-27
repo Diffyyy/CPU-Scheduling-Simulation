@@ -28,6 +28,7 @@ public class ScheduleTest {
             p.addEndTime(t); p.addWaitTime(wait);
             while (i < processes.size() && t >= processes.get(i).getArrivalTime()) q.offer(processes.get(i++));
             if (p.getRemainingTime() > 0) q.add(p);
+            if(q.isEmpty() && i < processes.size())q.add(processes.get(i++));
         }
         float avg = 0;
         processes.sort(Comparator.comparingInt(Process::getProcessId));
@@ -57,18 +58,24 @@ public class ScheduleTest {
         HashMap<Process, Integer> lastFinished = new HashMap<>();
         for (Process p : processes) lastFinished.put(p, p.getArrivalTime());
 
-        PriorityQueue<Process> q = new PriorityQueue<>(Comparator.comparingInt(Process::getRemainingTime));
+        PriorityQueue<Process> q = new PriorityQueue<>(new Comparator<Process>() {
+            @Override
+            public int compare(Process o1, Process o2) {
+                if(o1.getRemainingTime()==o2.getRemainingTime()) return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
+                return Integer.compare(o1.getRemainingTime(), o2.getRemainingTime());
+            }
+        });
         q.add(processes.get(0));
-        int t = processes.get(0).getArrivalTime();
+        int t=0;
         int i = 1;
 
         while (!q.isEmpty()){
             Process p = q.poll();
+            if(t < p.getArrivalTime()) t = p.getArrivalTime();
             int remaining = p.getRemainingTime();
             int wait = t-lastFinished.get(p);
             p.setWaitingTime(p.getWaitingTime() + wait);
             p.addStartTime(t);
-
             int elapsed = p.getRemainingTime();
             while (i < n && t+elapsed >= processes.get(i).getArrivalTime()){
                 int nextRemaining = processes.get(i).getRemainingTime();
@@ -85,6 +92,7 @@ public class ScheduleTest {
             p.addEndTime(t);
             p.addWaitTime(wait);
             if(p.getRemainingTime()>0)q.add(p);
+            if(q.isEmpty() && i < processes.size())q.add(processes.get(i++));
         }
 
         float avg = 0;
@@ -134,7 +142,13 @@ public class ScheduleTest {
         HashMap<Process, Integer> lastFinished = new HashMap<>();
         for (Process p : processes) lastFinished.put(p, p.getArrivalTime());
 
-        PriorityQueue<Process> q = new PriorityQueue<>(Comparator.comparingInt(Process::getRemainingTime));
+        PriorityQueue<Process> q = new PriorityQueue<>(new Comparator<Process>() {
+            @Override
+            public int compare(Process o1, Process o2) {
+                if(o1.getRemainingTime()==o2.getRemainingTime()) return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
+                return Integer.compare(o1.getRemainingTime(), o2.getRemainingTime());
+            }
+        });
         q.add(processes.get(0));
         int t = 0;
         int i = 1;
@@ -175,6 +189,16 @@ public class ScheduleTest {
         processes.addAll(List.of(p1, p2, p3, p4));
         return processes;
     }
+
+    public static ArrayList<Process> processes_2(){
+        Process p1 = new Process(1, 18, 6);
+        Process p2 = new Process(2, 17,3);
+        Process p3 = new Process(3, 9, 0);
+        Process p4 = new Process(4, 14, 15);
+        ArrayList<Process> processes = new ArrayList<>();
+        processes.addAll(List.of(p1, p2, p3, p4));
+        return processes;
+    }
     public static ArrayList<Process>[] randomProcesses(){
         int n = (int) (Math.random() * 3+3);
         ArrayList<Process>[] ret = new ArrayList[2];
@@ -191,7 +215,8 @@ public class ScheduleTest {
         ret[1] = processes1;
         return ret;
     }
-    public String convertProcessesToString(ArrayList<Process> processes){
+
+    public static String convertProcessesToString(ArrayList<Process> processes){
         StringBuilder sb = new StringBuilder();
         for(Process p : processes){
             sb.append(String.format("%d %d %d\n", p.getProcessId(), p.getArrivalTime(), p.getBurstTime()));
@@ -211,7 +236,20 @@ public class ScheduleTest {
 
         assertEquals(first, second);
     }
+    @Test
+    public void test_2(){
+        ArrayList<Process>[] tests = randomProcesses();
+        System.out.println(convertProcessesToString(tests[0]));
+        System.out.println();
+        systemOutRule.clearLog();;
 
+        Main.SRTF(processes_2());
+        String first =  systemOutRule.getLog()  ;
+        systemOutRule.clearLog();
+//        SRTF(processes_2());
+        String second = systemOutRule.getLog();
+        assertEquals(first, second);
+    }
     @Test
     public void random(){
         List<String> failedAssertions = new ArrayList<>();
@@ -244,7 +282,7 @@ public class ScheduleTest {
                         SRTF(test[0]);
                         first = systemOutRule.getLog();
                         systemOutRule.clearLog();
-                        SRTF(test[1]);
+                        Main.SRTF(test[1]);
                         second = systemOutRule.getLog();
                         name = "SRTF";
                         break;

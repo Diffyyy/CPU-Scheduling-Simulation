@@ -124,6 +124,7 @@ public class Main {
     }
 
     public static void SRTF(ArrayList<Process> processes){
+
         int currentTime = 0;
         int numCompleted = 0;
         int num = processes.size();
