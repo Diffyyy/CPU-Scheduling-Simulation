@@ -102,8 +102,9 @@ public class ScheduleTest {
     public static void FCFS(ArrayList<Process> processes){
         processes.sort(Comparator.comparingInt(Process::getArrivalTime));
         float avg = 0;
-        int t = processes.get(0).getArrivalTime();
+        int t = 0;
         for(Process p: processes){
+            if(t < p.getArrivalTime()) t = p.getArrivalTime()   ;
             int wait = t - p.getArrivalTime();
             int end = t +  p.getBurstTime();
             p.setStartTime(t);
@@ -135,11 +136,12 @@ public class ScheduleTest {
 
         PriorityQueue<Process> q = new PriorityQueue<>(Comparator.comparingInt(Process::getRemainingTime));
         q.add(processes.get(0));
-        int t = processes.get(0).getArrivalTime();
+        int t = 0;
         int i = 1;
 
         while (!q.isEmpty()){
             Process p = q.poll();
+            if(t < p.getArrivalTime()) t = p.getArrivalTime();
             int wait = t-lastFinished.get(p);
             p.setWaitingTime(p.getWaitingTime() + wait);
             p.setStartTime(t);
@@ -151,6 +153,7 @@ public class ScheduleTest {
             lastFinished.put(p, t);
             p.setEndTime(t);
             p.setWaitingTime(wait);
+            if(q.isEmpty() && i < processes.size())q.add(processes.get(i++));
         }
 
         float avg = 0;
@@ -173,7 +176,7 @@ public class ScheduleTest {
         return processes;
     }
     public static ArrayList<Process>[] randomProcesses(){
-        int n = (int) (Math.random() * 98+3);
+        int n = (int) (Math.random() * 3+3);
         ArrayList<Process>[] ret = new ArrayList[2];
         ArrayList<Process > processes = new ArrayList<>();
         ArrayList<Process> processes1 = new ArrayList<>();
