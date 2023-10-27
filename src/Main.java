@@ -129,7 +129,6 @@ public class Main {
         int numCompleted = 0;
         int num = processes.size();
         ArrayList<Process> completed = new ArrayList<>();
-        DecimalFormat df = new DecimalFormat("0.00");
         double avgWaitTime = 0;
         Process previousProcess = null;
 
@@ -190,7 +189,7 @@ public class Main {
             }
         }
 
-        System.out.println("Average waiting time: " + df.format(avgWaitTime / num));
+        System.out.println("Average waiting time: " +(avgWaitTime / num));
 
     }
 
@@ -218,7 +217,7 @@ public class Main {
                 SJF(processList);
                 break;
             case 2:
-                ScheduleTest.SRTF(processList);
+                SRTF(processList);
                 break;
             case 3:
                 RR(processList, Z);

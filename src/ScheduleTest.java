@@ -240,10 +240,11 @@ public class ScheduleTest {
     public void test_2(){
         ArrayList<Process>[] tests = randomProcesses();
         System.out.println(convertProcessesToString(tests[0]));
+//        ArrayList<Process> processes = processes_2();
         System.out.println();
         systemOutRule.clearLog();;
 
-        Main.SRTF(processes_2());
+        Main.SRTF(tests[0]);
         String first =  systemOutRule.getLog()  ;
         systemOutRule.clearLog();
 //        SRTF(processes_2());
