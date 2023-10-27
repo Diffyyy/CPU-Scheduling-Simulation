@@ -36,7 +36,7 @@ public class Main {
         }
 
         averageWaitingTime = totalWaitingTime/result.size();
-        System.out.println("Average Waiting Time: " + averageWaitingTime);
+        System.out.println("Average waiting time: " + averageWaitingTime);
     }
 
     public static void SJF(ArrayList<Process> processList) {
@@ -62,7 +62,7 @@ public class Main {
                 queue.remove(next);
                 next.setStartTime(time);
                 time += duration;
-                System.out.println(time);
+//                System.out.println(time);
                 next.setEndTime(time);
                 completed.add(next);
                 for(Process p : queue)
@@ -96,20 +96,24 @@ public class Main {
         int i = 1;
         while (!q.isEmpty()) {
             Process p = q.poll();
-            p.setWaitingTime(p.getWaitingTime() + t - lastFinished.get(p));
-            if (p.getStartTime() == -1) p.setStartTime(t);
-
+            int wait = t-lastFinished.get(p);
+            p.setWaitingTime(p.getWaitingTime() + wait);
+            p.addStartTime(t);
             int processTime = Math.min(Z, p.getRemainingTime());
             p.decrementRemaining(processTime);
             t += processTime;
             lastFinished.put(p, t);
+            p.addEndTime(t); p.addWaitTime(wait);
             while (i < processes.size() && t >= processes.get(i).getArrivalTime()) q.offer(processes.get(i++));
             if (p.getRemainingTime() > 0) q.add(p);
-            else p.setEndTime(t);
         }
         float avg = 0;
+        processes.sort(Comparator.comparingInt(Process::getProcessId));
         for(Process p: processes){
-            System.out.printf("%d start time: %d end time %d | Waiting time: %d\n",p.getProcessId(), p.getStartTime(),p.getEndTime(), p.getWaitingTime());
+            for(int j = 0; j < p.getStartTimes().size(); j++){
+                System.out.printf("%d start time: %d end time: %d | Waiting time: %d\n",p.getProcessId(), p.getStartTimes().get(j),p.getEndTimes().get(j), p.getWaitTimes().get(j));
+            }
+
             avg +=p.getWaitingTime();
         }
         avg/=processes.size();
@@ -117,9 +121,10 @@ public class Main {
 
     }
 
-    public static void srtf(ArrayList<Process> processes, int num){
+    public static void SRTF(ArrayList<Process> processes){
         int currentTime = 0;
         int numCompleted = 0;
+        int num = processes.size();
         ArrayList<Process> completed = new ArrayList<>();
         DecimalFormat df = new DecimalFormat("0.00");
         double avgWaitTime = 0;
@@ -177,7 +182,7 @@ public class Main {
                 }
                 process.addWaitTime(waitTime);
                 System.out.println(process.getProcessId() + " start time: " + process.getStartTimes().get(i) +
-                        " end time: " + process.getEndTimes().get(i) + " wait time: " + process.getWaitTimes().get(i));
+                        " end time: " + process.getEndTimes().get(i) + " | Waiting time: " + process.getWaitTimes().get(i));
                 avgWaitTime = avgWaitTime + process.getWaitTimes().get(i);
             }
         }
@@ -210,7 +215,7 @@ public class Main {
                 SJF(processList);
                 break;
             case 2:
-                //SRTF
+                ScheduleTest.SRTF(processList);
                 break;
             case 3:
                 RR(processList, Z);
