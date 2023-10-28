@@ -32,7 +32,7 @@ public class Main {
         float totalWaitingTime = 0;
         float averageWaitingTime;
         for (int i = 0; i < result.size(); i++){
-           totalWaitingTime += result.get(i)[3];
+            totalWaitingTime += result.get(i)[3];
         }
 
         averageWaitingTime = totalWaitingTime/result.size();
@@ -71,7 +71,6 @@ public class Main {
             else{
                 Process next_arriving = Collections.min(all, Comparator.comparingInt(Process::getArrivalTime));
                 time = next_arriving.getArrivalTime();
-//                System.out.println(time);
             }
         }
 
@@ -120,14 +119,21 @@ public class Main {
         }
         avg/=processes.size();
         System.out.println("Average waiting time: "+avg);
-
     }
 
     public static void SRTF(ArrayList<Process> processes){
-
         int currentTime = 0;
         int numCompleted = 0;
-        int num = processes.size();
+        int num = 0;
+        for(Process process: processes){
+            if(process.getBurstTime() > 0){
+                num++;
+            }
+            else{
+                process.addStartTime(process.getArrivalTime());
+                process.addEndTime(process.getArrivalTime());
+            }
+        }
         ArrayList<Process> completed = new ArrayList<>();
         double avgWaitTime = 0;
         Process previousProcess = null;
@@ -138,7 +144,7 @@ public class Main {
 
             int  i = 0;
             for(Process process: processes){
-                if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0){
+                if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0) {
                     shortestProcess = i;
                     shortestBurst = process.getRemainingTime();
                 }
@@ -147,7 +153,6 @@ public class Main {
 
             if(!(shortestProcess == Integer.MIN_VALUE)){
                 Process shortest = processes.get(shortestProcess);
-
                 if(previousProcess != null){
                     if(shortest.getProcessId() != previousProcess.getProcessId()){
                         previousProcess.addEndTime(currentTime);
@@ -160,6 +165,7 @@ public class Main {
 
                 //set the "previous process" variable to the current for the next loop iteration
                 previousProcess = shortest;
+
                 shortest.setRemainingTime(shortest.getRemainingTime()-1);
                 if(shortest.getRemainingTime() == 0){
                     numCompleted++;
@@ -167,7 +173,6 @@ public class Main {
                         shortest.addEndTime(currentTime+1);
                     }
                 }
-
 
             }
             currentTime++;
@@ -189,7 +194,7 @@ public class Main {
             }
         }
 
-        System.out.println("Average waiting time: " +(avgWaitTime / num));
+        System.out.println("Average waiting time: " + (avgWaitTime / num));
 
     }
 
