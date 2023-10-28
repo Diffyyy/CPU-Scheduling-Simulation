@@ -224,7 +224,7 @@ public class ScheduleTest {
         }
         getString(X, processList, Z, true);
     }
-    public static ArrayList<Process>[] randomProcesses(){
+    public static ArrayList<Process>[] randomProcesses(){   
         int n = (int) (Math.random() * 3+3);
         ArrayList<Process>[] ret = new ArrayList[2];
         ArrayList<Process > processes = new ArrayList<>();
