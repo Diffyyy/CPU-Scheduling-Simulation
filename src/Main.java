@@ -135,7 +135,7 @@ public class Main {
             }
         }
         ArrayList<Process> completed = new ArrayList<>();
-        double avgWaitTime = 0;
+        float avgWaitTime = 0;
         Process previousProcess = null;
 
         while (numCompleted < num){
