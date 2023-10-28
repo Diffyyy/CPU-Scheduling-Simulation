@@ -303,7 +303,7 @@ public class ScheduleTest {
                     failedAssertions.add("\n-------------------------------------------------\n");
                     failedAssertions.add(name+" | FAILED TEST CASE FOR: \n");
                     failedAssertions.add(convertProcessesToString(test[0])+"\n");
-                    failedAssertions.add(String.format("Expected: \n%s\n, Actual: \n%s", first, second));
+                    failedAssertions.add(String.format("Expected: \n%s\nActual: \n%s", first, second));
                     failedAssertions.add("\n-------------------------------------------------\n");
                 }
             }
