@@ -57,12 +57,11 @@ public class Main {
             }
 
             if(!queue.isEmpty()){
-                Process next = Collections.min(queue, Comparator.comparingInt(Process::getBurstTime));
+                Process next = Collections.min(queue, Comparator.comparingInt(Process::getBurstTime).thenComparingInt(Process::getArrivalTime).thenComparingInt(Process::getProcessId));
                 int duration = next.getBurstTime();
                 queue.remove(next);
                 next.setStartTime(time);
                 time += duration;
-//                System.out.println(time);
                 next.setEndTime(time);
                 completed.add(next);
                 for(Process p : queue)
@@ -227,12 +226,15 @@ public class Main {
         }
         switch(X){
             case 0:
+                Z = 1;
                 FCFS(processList);
                 break;
             case 1:
+                Z = 1;
                 SJF(processList);
                 break;
             case 2:
+                Z = 1;
                 SRTF(processList);
                 break;
             case 3:
