@@ -71,7 +71,6 @@ public class Main {
             else{
                 Process next_arriving = Collections.min(all, Comparator.comparingInt(Process::getArrivalTime));
                 time = next_arriving.getArrivalTime();
-                System.out.println(time);
             }
         }
 
