@@ -125,7 +125,16 @@ public class Main {
     public static void SRTF(ArrayList<Process> processes){
         int currentTime = 0;
         int numCompleted = 0;
-        int num = processes.size();
+        int num = 0;
+        for(Process process: processes){
+            if(process.getBurstTime() > 0){
+                num++;
+            }
+            else{
+                process.addStartTime(process.getArrivalTime());
+                process.addEndTime(process.getArrivalTime());
+            }
+        }
         ArrayList<Process> completed = new ArrayList<>();
         double avgWaitTime = 0;
         Process previousProcess = null;
@@ -136,7 +145,7 @@ public class Main {
 
             int  i = 0;
             for(Process process: processes){
-                if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0){
+                if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0) {
                     shortestProcess = i;
                     shortestBurst = process.getRemainingTime();
                 }
@@ -158,6 +167,7 @@ public class Main {
 
                 //set the "previous process" variable to the current for the next loop iteration
                 previousProcess = shortest;
+
                 shortest.setRemainingTime(shortest.getRemainingTime()-1);
                 if(shortest.getRemainingTime() == 0){
                     numCompleted++;
@@ -165,7 +175,6 @@ public class Main {
                         shortest.addEndTime(currentTime+1);
                     }
                 }
-
 
             }
             currentTime++;
