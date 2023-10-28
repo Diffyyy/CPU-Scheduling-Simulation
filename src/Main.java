@@ -124,6 +124,7 @@ public class Main {
     public static void SRTF(ArrayList<Process> processes){
         int currentTime = 0;
         int numCompleted = 0;
+
         int num = 0;
         for(Process process: processes){
             if(process.getBurstTime() > 0){
@@ -170,9 +171,10 @@ public class Main {
                 shortest.setRemainingTime(shortest.getRemainingTime()-1);
                 if(shortest.getRemainingTime() == 0){
                     numCompleted++;
-                    if(numCompleted == num){
-                        shortest.addEndTime(currentTime+1);
-                    }
+//                    if(numCompleted == num){
+//                        shortest.addEndTime(currentTime+1);
+//                    }
+                    shortest.addEndTime(currentTime+1);
                 }
 
             }
