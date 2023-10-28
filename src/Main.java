@@ -197,7 +197,7 @@ public class Main {
             }
         }
 
-        System.out.println("Average waiting time: " + (avgWaitTime / num));
+        System.out.println("Average waiting time: " + (avgWaitTime / processes.size()));
 
     }
 

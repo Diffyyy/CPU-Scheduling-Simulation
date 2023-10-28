@@ -3,6 +3,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -77,14 +78,17 @@ public class ScheduleTest {
             p.setWaitingTime(p.getWaitingTime() + wait);
             p.addStartTime(t);
             int elapsed = p.getRemainingTime();
-            while (i < n && t+elapsed >= processes.get(i).getArrivalTime()){
+            while (i < n && t+elapsed >= processes.get(i).getArrivalTime() ){
                 int nextRemaining = processes.get(i).getRemainingTime();
                 int nextArrival = processes.get(i).getArrivalTime();
-                q.offer(processes.get(i++));
-                int temp = nextArrival -t;
-                if(remaining - temp > nextRemaining ){ //preempt
-                    elapsed = temp; break;
-                }
+                if(nextRemaining>0) {
+                    q.offer(processes.get(i++));
+                    int temp = nextArrival - t;
+                    if (remaining - temp > nextRemaining) { //preempt
+                        elapsed = temp;
+                        break;
+                    }
+                }else i++;
             }
             p.decrementRemaining(elapsed);
             t+=elapsed;
@@ -199,6 +203,27 @@ public class ScheduleTest {
         processes.addAll(List.of(p1, p2, p3, p4));
         return processes;
     }
+
+    public static void main(String[] args) {
+        testInput();
+    }
+    public static void testInput(){
+        int X, Y, Z, processId, arrivalTime, burstTime, i;
+        ArrayList<Process> processList = new ArrayList<>();
+        Scanner sc = new Scanner(System.in);
+
+        X = sc.nextInt();
+        Y = sc.nextInt();
+        Z = sc.nextInt();
+
+        for(i = 0; i < Y; i++){
+            processId = sc.nextInt();
+            arrivalTime = sc.nextInt();
+            burstTime = sc.nextInt();
+            processList.add(new Process(processId, arrivalTime, burstTime));
+        }
+        getString(X, processList, Z, true);
+    }
     public static ArrayList<Process>[] randomProcesses(){
         int n = (int) (Math.random() * 3+3);
         ArrayList<Process>[] ret = new ArrayList[2];
@@ -223,6 +248,29 @@ public class ScheduleTest {
         }
         return sb.toString();
 
+    }
+    public static String getString(int algorithm, ArrayList<Process> processes, int Z, boolean test){
+        systemOutRule.clearLog();
+        switch(algorithm){
+            case 0:
+                if(test) FCFS(processes);
+                else Main.FCFS(processes);
+                break;
+            case 1:
+                if(test) SJF(processes);
+                else Main.SJF(processes);
+                break;
+            case 2:
+                if(test) SRTF(processes);
+                else Main.SRTF(processes);
+                break;
+            case 3:
+                if(test) RR(processes, Z);
+                else Main.RR(processes, Z);
+                break;
+
+        }
+        return systemOutRule.getLog();
     }
     @ClassRule
     public static final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
@@ -252,7 +300,7 @@ public class ScheduleTest {
         assertEquals(first, second);
     }
     @Test
-    public void random(){
+        public void random(){
         List<String> failedAssertions = new ArrayList<>();
         int i = 0;
         while(i < 5){
