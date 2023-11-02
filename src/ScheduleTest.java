@@ -222,7 +222,7 @@ public class ScheduleTest {
             burstTime = sc.nextInt();
             processList.add(new Process(processId, arrivalTime, burstTime));
         }
-        getString(X, processList, Z, true);
+        getString(X, processList, Z, false);
     }
     public static ArrayList<Process>[] randomProcesses(){   
         int n = (int) (Math.random() * 3+3);
