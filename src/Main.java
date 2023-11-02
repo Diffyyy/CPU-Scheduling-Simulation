@@ -57,12 +57,11 @@ public class Main {
             }
 
             if(!queue.isEmpty()){
-                Process next = Collections.min(queue, Comparator.comparingInt(Process::getBurstTime));
+                Process next = Collections.min(queue, Comparator.comparingInt(Process::getBurstTime).thenComparingInt(Process::getArrivalTime).thenComparingInt(Process::getProcessId));
                 int duration = next.getBurstTime();
                 queue.remove(next);
                 next.setStartTime(time);
                 time += duration;
-//                System.out.println(time);
                 next.setEndTime(time);
                 completed.add(next);
                 for(Process p : queue)
@@ -134,9 +133,12 @@ public class Main {
                 process.addEndTime(process.getArrivalTime());
             }
         }
+
+        processes.sort(Comparator.comparingInt(Process::getArrivalTime));
         ArrayList<Process> completed = new ArrayList<>();
         float avgWaitTime = 0;
         Process previousProcess = null;
+
 
         while (numCompleted < num){
             int shortestProcess = Integer.MIN_VALUE;
@@ -145,7 +147,7 @@ public class Main {
             int  i = 0;
             for(Process process: processes){
                 if(process.getArrivalTime() <= currentTime && process.getRemainingTime() < shortestBurst && process.getRemainingTime() > 0) {
-                    if(previousProcess != null && previousProcess.getRemainingTime() == process.getRemainingTime()){
+                    if(previousProcess != null && previousProcess.getRemainingTime() == process.getRemainingTime() && previousProcess.getRemainingTime() != process.getArrivalTime()){
                         shortestProcess = processes.indexOf(previousProcess);
                         shortestBurst = previousProcess.getRemainingTime();
                     }
@@ -190,6 +192,7 @@ public class Main {
         }
 
         int waitTime = 0;
+        processes.sort(Comparator.comparingInt(Process::getProcessId));
         for(Process process: processes){
             for(int i = 0; i < process.getStartTimes().size(); i++){
                 if(i == 0){
@@ -227,12 +230,15 @@ public class Main {
         }
         switch(X){
             case 0:
+                Z = 1;
                 FCFS(processList);
                 break;
             case 1:
+                Z = 1;
                 SJF(processList);
                 break;
             case 2:
+                Z = 1;
                 SRTF(processList);
                 break;
             case 3:

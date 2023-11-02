@@ -50,6 +50,7 @@ public class ScheduleTest {
             @Override
             public int compare(Process o1, Process o2) {
                 if(o1.getArrivalTime()==o2.getArrivalTime()) return Integer.compare(o1.getRemainingTime(), o2.getRemainingTime());
+
                 return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
             }
         };
@@ -62,7 +63,10 @@ public class ScheduleTest {
         PriorityQueue<Process> q = new PriorityQueue<>(new Comparator<Process>() {
             @Override
             public int compare(Process o1, Process o2) {
-                if(o1.getRemainingTime()==o2.getRemainingTime()) return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
+                if(o1.getRemainingTime()==o2.getRemainingTime()){
+                    if(o1.getArrivalTime() == o2.getArrivalTime()) return Integer.compare(o1.getProcessId(), o2.getProcessId());
+                    return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
+                }
                 return Integer.compare(o1.getRemainingTime(), o2.getRemainingTime());
             }
         });
@@ -81,14 +85,14 @@ public class ScheduleTest {
             while (i < n && t+elapsed >= processes.get(i).getArrivalTime() ){
                 int nextRemaining = processes.get(i).getRemainingTime();
                 int nextArrival = processes.get(i).getArrivalTime();
-                if(nextRemaining>0) {
+//                if(nextRemaining>0) {
                     q.offer(processes.get(i++));
                     int temp = nextArrival - t;
                     if (remaining - temp > nextRemaining) { //preempt
                         elapsed = temp;
                         break;
                     }
-                }else i++;
+//                }else i++;
             }
             p.decrementRemaining(elapsed);
             t+=elapsed;
@@ -149,7 +153,10 @@ public class ScheduleTest {
         PriorityQueue<Process> q = new PriorityQueue<>(new Comparator<Process>() {
             @Override
             public int compare(Process o1, Process o2) {
-                if(o1.getRemainingTime()==o2.getRemainingTime()) return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
+                if(o1.getRemainingTime()==o2.getRemainingTime()){
+                    if(o1.getArrivalTime() == o2.getArrivalTime()) return Integer.compare(o1.getProcessId(), o2.getProcessId());
+                    return Integer.compare(o1.getArrivalTime(), o2.getArrivalTime());
+                }
                 return Integer.compare(o1.getRemainingTime(), o2.getRemainingTime());
             }
         });
@@ -225,14 +232,14 @@ public class ScheduleTest {
         getString(X, processList, Z, false);
     }
     public static ArrayList<Process>[] randomProcesses(){   
-        int n = (int) (Math.random() * 3+3);
+        int n = (int) (Math.random() * 97+3);
         ArrayList<Process>[] ret = new ArrayList[2];
         ArrayList<Process > processes = new ArrayList<>();
         ArrayList<Process> processes1 = new ArrayList<>();
         for(int i = 0; i < n; i++){
             int id = i+1;
             int arrival = (int)(Math.random()*21);
-            int burst = (int) (Math.random()*21);
+            int burst = (int) (Math.random()*20+1);
             processes.add(new Process(id, arrival, burst));
             processes1.add(new Process(id, arrival, burst));
         }
@@ -303,7 +310,7 @@ public class ScheduleTest {
         public void random(){
         List<String> failedAssertions = new ArrayList<>();
         int i = 0;
-        while(i < 5){
+        while(i < 1000){
             for(int j = 0; j < 3; j++){
                 ArrayList<Process>[] test = randomProcesses();
                 String first;
