@@ -213,7 +213,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
         int X, Y, Z, processId, arrivalTime, burstTime, i;
         ArrayList<Process> processList = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
