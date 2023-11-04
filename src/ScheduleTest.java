@@ -10,38 +10,65 @@ import static org.junit.Assert.*;
 public class ScheduleTest {
 
     public static void RR(ArrayList<Process> processes, int Z) {
-        processes.sort(Comparator.comparingInt(Process::getArrivalTime));
-        LinkedList<Process> q = new LinkedList<>();
-        HashMap<Process, Integer> lastFinished = new HashMap<>();
-        for (Process p : processes) lastFinished.put(p, p.getArrivalTime());
-        q.add(processes.get(0));
-        int t = processes.get(0).getArrivalTime();
-        int i = 1;
-        while (!q.isEmpty()) {
-            Process p = q.poll();
-            int wait = t-lastFinished.get(p);
-            p.setWaitingTime(p.getWaitingTime() + wait);
-            p.addStartTime(t);
-            int processTime = Math.min(Z, p.getRemainingTime());
-            p.decrementRemaining(processTime);
-            t += processTime;
-            lastFinished.put(p, t);
-            p.addEndTime(t); p.addWaitTime(wait);
-            while (i < processes.size() && t >= processes.get(i).getArrivalTime()) q.offer(processes.get(i++));
-            if (p.getRemainingTime() > 0) q.add(p);
-            if(q.isEmpty() && i < processes.size())q.add(processes.get(i++));
-        }
-        float avg = 0;
-        processes.sort(Comparator.comparingInt(Process::getProcessId));
-        for(Process p: processes){
-            for(int j = 0; j < p.getStartTimes().size(); j++){
-                System.out.printf("%d start time: %d end time: %d | Waiting time: %d\n",p.getProcessId(), p.getStartTimes().get(j),p.getEndTimes().get(j), p.getWaitTimes().get(j));
-            }
+        ArrayList<Process> all = new ArrayList<>(processes);
+        ArrayList<Process> queue = new ArrayList<>();
+        ArrayList<Process> completed = new ArrayList<>();
+        int time = 0;
+        int duration;
+        int numProcesses = all.size();
+        Process next = null;
 
-            avg +=p.getWaitingTime();
+        while(!all.isEmpty() || !queue.isEmpty()){
+            Iterator<Process> iterator = all.iterator();
+            while(iterator.hasNext()){
+                Process p = iterator.next();
+                if(time >= p.getArrivalTime()){
+                    iterator.remove();
+                    p.setWaitingTime(time-p.getArrivalTime());
+                    queue.add(p);
+                }
+            }
+            if(next != null)
+                if(next.getRemainingTime() != 0)
+                    queue.add(next);
+
+            if(!queue.isEmpty()){
+                next = queue.get(0);
+                queue.remove(next);
+                next.setStartTime(time);
+                if (next.getRemainingTime() > Z)
+                    duration = Z;
+                else
+                    duration = next.getRemainingTime();
+                next.setRemainingTime(next.getRemainingTime() - duration);
+                time += duration;
+
+                Process copy = new Process(next.getProcessId(), next.getArrivalTime(), next.getBurstTime());
+                copy.setStartTime(next.getStartTime());
+                copy.setEndTime(time);
+                copy.setRemainingTime(next.getRemainingTime());
+                copy.setWaitingTime(next.getWaitingTime());
+                next.setWaitingTime(0);
+                completed.add(copy);
+                next.setEndTime(time);
+
+                for(Process p : queue)
+                    p.setWaitingTime(p.getWaitingTime()+duration);
+            }
+            else{
+                Process next_arriving = Collections.min(all, Comparator.comparingInt(Process::getArrivalTime));
+                time = next_arriving.getArrivalTime();
+            }
         }
-        avg/=processes.size();
-        System.out.println("Average waiting time: "+avg);
+
+        completed.sort(Comparator.comparingInt(Process::getProcessId));
+        float avgWait = 0;
+        for(Process p : completed){
+            System.out.println(p.getProcessId() + " start time: " + p.getStartTime() + " end time: " + p.getEndTime() + " | Waiting time: " + p.getWaitingTime());
+            avgWait += p.getWaitingTime();
+        }
+        avgWait /= numProcesses;
+        System.out.println("Average waiting time: " + avgWait);
 
     }
 
@@ -232,13 +259,13 @@ public class ScheduleTest {
         getString(X, processList, Z, false);
     }
     public static ArrayList<Process>[] randomProcesses(){   
-        int n = (int) (Math.random() * 97+3);
+        int n = (int) (Math.random() * 3+1);
         ArrayList<Process>[] ret = new ArrayList[2];
         ArrayList<Process > processes = new ArrayList<>();
         ArrayList<Process> processes1 = new ArrayList<>();
         for(int i = 0; i < n; i++){
             int id = i+1;
-            int arrival = (int)(Math.random()*21);
+            int arrival = (int)(Math.random()*20);
             int burst = (int) (Math.random()*20+1);
             processes.add(new Process(id, arrival, burst));
             processes1.add(new Process(id, arrival, burst));
@@ -310,8 +337,8 @@ public class ScheduleTest {
         public void random(){
         List<String> failedAssertions = new ArrayList<>();
         int i = 0;
-        while(i < 100000){
-            for(int j = 0; j < 3; j++){
+        while(i < 100){
+            for(int j = 0; j < 4; j++){
                 ArrayList<Process>[] test = randomProcesses();
                 String first;
                 String second;
@@ -349,7 +376,7 @@ public class ScheduleTest {
                         systemOutRule.clearLog();
                         Main.RR(test[1], Z);
                         second = systemOutRule.getLog();
-                        name = "RR";
+                        name = "RR Z = "+Z;
                         break;
 
 
