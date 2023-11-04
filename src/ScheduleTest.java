@@ -310,7 +310,7 @@ public class ScheduleTest {
         public void random(){
         List<String> failedAssertions = new ArrayList<>();
         int i = 0;
-        while(i < 1000){
+        while(i < 100000){
             for(int j = 0; j < 3; j++){
                 ArrayList<Process>[] test = randomProcesses();
                 String first;
