@@ -259,7 +259,7 @@ public class ScheduleTest {
         getString(X, processList, Z, false);
     }
     public static ArrayList<Process>[] randomProcesses(){   
-        int n = (int) (Math.random() * 3+1);
+        int n = (int) (Math.random() * 2+3);
         ArrayList<Process>[] ret = new ArrayList[2];
         ArrayList<Process > processes = new ArrayList<>();
         ArrayList<Process> processes1 = new ArrayList<>();
@@ -370,7 +370,7 @@ public class ScheduleTest {
                         name = "SRTF";
                         break;
                     default:
-                        int Z = (int) (Math.random()*100+1);
+                        int Z = (int) (Math.random()*20+1);
                         RR(test[0], Z);
                         first = systemOutRule.getLog();
                         systemOutRule.clearLog();
